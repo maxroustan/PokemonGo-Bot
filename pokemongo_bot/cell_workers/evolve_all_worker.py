@@ -2,12 +2,14 @@ from utils import distance, format_dist
 from pokemongo_bot.human_behaviour import sleep
 from pokemongo_bot import logger
 from sets import Set
+from pushover import Client
 
 class EvolveAllWorker(object):
     def __init__(self, bot):
         self.api = bot.api
         self.config = bot.config
         self.bot = bot
+        self.client = Client(self.config.pushover_user_key, api_token=self.config.pushover_api_token)
         # self.position = bot.position
 
     def work(self):
@@ -114,6 +116,13 @@ class EvolveAllWorker(object):
             print('[#] Successfully evolved {} with {} cp!'.format(
                 pokemon_name, pokemon_cp
             ))
+
+        message = 'Successfully evolved {} with {} cp!'.format(
+                pokemon_name, pokemon_cp
+            )
+
+        self.client.send_message(message, title="Evolved a Pokemon")
+
         else:
             # cache pokemons we can't evolve. Less server calls
             cache[pokemon_name] = 1
