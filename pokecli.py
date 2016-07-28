@@ -146,6 +146,18 @@ def init_config():
                         type=bool,
                         default=False)
 
+    parser.add_argument("-puk",
+                        "--pushover_user_key",
+                        help="(Pushover Notification) User Key parameter to setup Pushover notifications",
+                        type=str,
+                        default="")
+
+    parser.add_argument("-pat",
+                        "--pushover_api_token",
+                        help="(Pushover Notification) API Token parameter to setup Pushover notifications",
+                        type=str,
+                        default="")
+
     config = parser.parse_args()
     if not config.username and 'username' not in load:
         config.username = raw_input("Username: ")

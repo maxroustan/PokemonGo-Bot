@@ -6,10 +6,13 @@ from utils import distance
 from pokemongo_bot.human_behaviour import sleep
 from pokemongo_bot import logger
 
+from pushover import Client
+
+
 class PokemonCatchWorker(object):
     BAG_FULL = 'bag_full'
     NO_POKEBALLS = 'no_pokeballs'
-
+    
     def __init__(self, pokemon, bot):
         self.pokemon = pokemon
         self.api = bot.api
@@ -19,6 +22,7 @@ class PokemonCatchWorker(object):
         self.pokemon_list = bot.pokemon_list
         self.item_list = bot.item_list
         self.inventory = bot.inventory
+        self.client = Client(self.config.pushover_user_key, api_token=self.config.pushover_api_token)
 
     def work(self):
         encounter_id = self.pokemon['encounter_id']
@@ -166,9 +170,25 @@ class PokemonCatchWorker(object):
                                             pokemon_to_transfer[0])
                                         logger.log(
                                             '[#] {} has been exchanged for candy!'.format(pokemon_name), 'green')
+
+                                        message = '{} [CP {}] [IV {}], exchanged it for candy.'.format(
+                                            pokemon_name,
+                                            cp,
+                                            pokemon_potential
+                                        )
+
+                                        self.client.send_message(message, title="Captured a Pokemon")
                                     else:
                                         logger.log(
                                         '[x] Captured {}! [CP {}]'.format(pokemon_name, cp), 'green')
+
+                                        message = '{} [CP {}] [IV {}], kept it.'.format(
+                                            pokemon_name,
+                                            cp,
+                                            pokemon_potential
+                                        )
+
+                                        self.client.send_message(message, title="Captured a Pokemon")
                             break
         time.sleep(5)
 
